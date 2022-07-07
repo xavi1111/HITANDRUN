@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     Collider2D myCollider2D;
     Animator myAnimator;
     GameObject player;
+    [SerializeField] HealthBar healthBar;
     [SerializeField] GameObject arrowPrefab;
     [SerializeField] float playerSpeed = 5;
     [SerializeField] float jumpSpeed = 5;
@@ -37,6 +38,8 @@ public class Player : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         currentAttackCooldown = attackCooldown;
         currentDashCooldown = dashCooldown;
+        healthBar.setMaxHealth(playerHealth);
+        healthBar.setCurrentHealth(playerHealth);
     }
 
     // Update is called once per frame
@@ -166,6 +169,8 @@ public class Player : MonoBehaviour
         if (collision.gameObject.tag.Equals("Enemy"))
         {
             playerHealth -= collision.gameObject.GetComponent<Enemy>().damage;
+            healthBar.setCurrentHealth(playerHealth);
+            
         }
     }
 }
