@@ -107,6 +107,7 @@ public class Player : MonoBehaviour
     {
         if (CrossPlatformInputManager.GetButtonDown("Jump"))
         {
+            myRigidBody2D.velocity = new Vector2(myRigidBody2D.velocity.x, 0);
             if (!myCollider2D.IsTouchingLayers(LayerMask.GetMask("Ground")))
             {
                 if (jumpsRemaining == 0)
