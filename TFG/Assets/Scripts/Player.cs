@@ -12,7 +12,9 @@ public class Player : MonoBehaviour
     Animator myAnimator;
     GameObject player;
     [SerializeField] HealthBar healthBar;
+    [SerializeField] ManaBar manaBar;
     [SerializeField] GameObject arrowPrefab;
+    [SerializeField] GameObject slashPrefab;
     [SerializeField] float playerSpeed = 5;
     [SerializeField] float jumpSpeed = 5;
     [SerializeField] float dashDistance = 8;
@@ -20,6 +22,9 @@ public class Player : MonoBehaviour
     [SerializeField] long dashCooldown = 180;
     [SerializeField] long attackCooldown = 180;
     [SerializeField] float playerHealth = 50;
+    [SerializeField] float playerMana = 100;
+    float arrowManaCost = 20;
+    float manaGain = 10;
     [SerializeField] AudioClip arrowSFX;
     [SerializeField] AudioClip dashSFX;
     [SerializeField] AudioClip jumpSFX;
@@ -40,6 +45,8 @@ public class Player : MonoBehaviour
         currentDashCooldown = dashCooldown;
         healthBar.setMaxHealth(playerHealth);
         healthBar.setCurrentHealth(playerHealth);
+        manaBar.setMaxMana(playerMana);
+        manaBar.setCurrentMana(playerMana);
     }
 
     // Update is called once per frame
@@ -62,7 +69,7 @@ public class Player : MonoBehaviour
             Run();
             FlipSprite();
             if (currentAttackCooldown.Equals(attackCooldown))
-                Attack();
+                AttackArrow();
             if (currentDashCooldown == dashCooldown)
                 Dash();
         }
@@ -107,21 +114,21 @@ public class Player : MonoBehaviour
     {
         if (CrossPlatformInputManager.GetButtonDown("Jump"))
         {
-            myRigidBody2D.velocity = new Vector2(myRigidBody2D.velocity.x, 0);
             if (!myCollider2D.IsTouchingLayers(LayerMask.GetMask("Ground")))
             {
                 if (jumpsRemaining == 0)
                     return;
                 else
                 {
+                    myRigidBody2D.velocity = new Vector2(myRigidBody2D.velocity.x, 0);
                     Vector2 velocityToAdd = new Vector2(0, jumpSpeed);
                     myRigidBody2D.velocity += velocityToAdd;
                     AudioSource.PlayClipAtPoint(jumpSFX, UnityEngine.Camera.main.transform.position, 1);
                     jumpsRemaining--;
                 }
             }
-            else { 
-
+            else {
+                myRigidBody2D.velocity = new Vector2(myRigidBody2D.velocity.x, 0);
                 Vector2 velocityToAdd = new Vector2(0, jumpSpeed);
                 myRigidBody2D.velocity += velocityToAdd;
                 AudioSource.PlayClipAtPoint(jumpSFX, UnityEngine.Camera.main.transform.position, 1);
@@ -141,6 +148,37 @@ public class Player : MonoBehaviour
         myAnimator.SetBool("Running", playerIsMovingHorizontaly);
     }
 
+    private void AttackArrow()
+    {
+            if (CrossPlatformInputManager.GetButtonDown("Fire1"))
+            {
+                /*
+                 Arrow
+                if (manaBar.getCurrentMana() >= arrowManaCost)
+                {
+                    Vector2 playerVelocity = new Vector2(0, myRigidBody2D.velocity.y);
+                    myRigidBody2D.velocity = playerVelocity;
+                    myAnimator.SetBool("Attack", true);
+                    currentAttackCooldown--;
+                    GameObject arrow = Instantiate(arrowPrefab, transform.position, Quaternion.identity);
+                    arrow.GetComponent<Rigidbody2D>().velocity = new Vector2((lastDirection > 0 ? 1 : -1) * arrow.GetComponent<Arrow>().arrowSpeed, 0f);
+                    arrow.GetComponent<Transform>().localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+                    AudioSource.PlayClipAtPoint(arrowSFX, UnityEngine.Camera.main.transform.position, 15);
+                
+                    manaBar.setCurrentMana(manaBar.getCurrentMana() - arrowManaCost);
+                }*/
+
+                Vector2 playerVelocity = new Vector2(0, myRigidBody2D.velocity.y);
+                myRigidBody2D.velocity = playerVelocity;
+                myAnimator.SetBool("Attack", true);
+                currentAttackCooldown--;
+                float controlThrow = CrossPlatformInputManager.GetAxis("Vertical");
+                GameObject slash = Instantiate(slashPrefab, transform.position + new Vector3(controlThrow.Equals(0) ? (lastDirection > 0 ? 1 : -1) * 0.5f : 0, controlThrow.Equals(0) ? 0 : (controlThrow > 0 ? 1 : -1) * 0.5f, 0), Quaternion.identity);
+                slash.GetComponent<Transform>().localScale = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z);
+                AudioSource.PlayClipAtPoint(arrowSFX, UnityEngine.Camera.main.transform.position, 15);
+            }
+    }
+
     private void Attack()
     {
         if (CrossPlatformInputManager.GetButtonDown("Fire1"))
@@ -153,6 +191,10 @@ public class Player : MonoBehaviour
             arrow.GetComponent<Rigidbody2D>().velocity = new Vector2((lastDirection > 0 ? 1 : -1) * arrow.GetComponent<Arrow>().arrowSpeed, 0f);
             arrow.GetComponent<Transform>().localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
             AudioSource.PlayClipAtPoint(arrowSFX, UnityEngine.Camera.main.transform.position, 15);
+            if(manaBar.getCurrentMana() < manaBar.getMaxMana() && (manaBar.getCurrentMana() + manaGain) <= manaBar.getMaxMana())
+                manaBar.setCurrentMana(manaBar.getCurrentMana() + manaGain);
+            else if (manaBar.getCurrentMana() < manaBar.getMaxMana() && (manaBar.getCurrentMana() + manaGain) >= manaBar.getMaxMana())
+                manaBar.setCurrentMana(manaBar.getMaxMana());
         }
     }
 

@@ -57,6 +57,11 @@ public class Enemy : MonoBehaviour
             Destroy(collision.gameObject);
             StartCoroutine(damageAnimation());
         }
+        if (collision.gameObject.tag.Equals("Slash"))
+        {
+            enemyHealth -= collision.gameObject.GetComponent<Slash>().damage;
+            StartCoroutine(damageAnimation());
+        }
         if (collision.gameObject.tag.Equals("Enemy"))
         {
             transform.localScale = new Vector2(3 * -(Mathf.Sign(myRigidBody2D.velocity.x)), 3f);
