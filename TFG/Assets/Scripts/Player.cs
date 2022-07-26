@@ -7,10 +7,13 @@ using UnityStandardAssets.CrossPlatformInput;
 
 public class Player : MonoBehaviour
 {
+    public static event Action<Vector3> FollowMe;
     Rigidbody2D myRigidBody2D;
     Collider2D myCollider2D;
     Animator myAnimator;
     GameObject player;
+    Vector3 previousPosition;
+    [SerializeField] float followDistance;
     [SerializeField] HealthBar healthBar;
     [SerializeField] ManaBar manaBar;
     [SerializeField] GameObject arrowPrefab;
@@ -23,6 +26,8 @@ public class Player : MonoBehaviour
     [SerializeField] long attackCooldown = 180;
     [SerializeField] float playerHealth = 50;
     [SerializeField] float playerMana = 100;
+    [SerializeField] float healManaCost = 0.01f;
+    [SerializeField] float healPerFrame = 0.01f;
     float arrowManaCost = 20;
     float manaGain = 10;
     [SerializeField] AudioClip arrowSFX;
@@ -52,6 +57,16 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        /*if (Vector3.Distance(transform.position, previousPosition) > followDistance)
+        {*/
+            if (FollowMe != null)
+            {
+                FollowMe.Invoke(transform.position);
+            }
+
+           
+        //}
+
         if (myCollider2D.IsTouchingLayers(LayerMask.GetMask("Ground")) && jumpsRemaining == 0)
             jumpsRemaining++;
 
@@ -72,6 +87,7 @@ public class Player : MonoBehaviour
                 AttackArrow();
             if (currentDashCooldown == dashCooldown)
                 Dash();
+            Heal();
         }
 
         if (currentDashCooldown < dashCooldown && currentDashCooldown > 0)
@@ -91,6 +107,18 @@ public class Player : MonoBehaviour
             myAnimator.SetBool("Dash", false);
         }
 
+    }
+
+    private void Heal()
+    {
+        if (CrossPlatformInputManager.GetButtonDown("Fire2") || CrossPlatformInputManager.GetButton("Fire2"))
+        {
+            if (manaBar.getCurrentMana() >= (healManaCost * Time.deltaTime) && healthBar.getCurrentHealth() < healthBar.getMaxHealth())
+            {
+                manaBar.setCurrentMana(manaBar.getCurrentMana() - (healManaCost * Time.deltaTime));
+                healthBar.setCurrentHealth(healthBar.getCurrentHealth() + (healPerFrame * Time.deltaTime));
+            }
+        }
     }
 
     private void Dash()
