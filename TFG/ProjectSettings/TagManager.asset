@@ -8,6 +8,12 @@ TagManager:
   - Wall
   - Arrow
   - Slash
+  - MoneyOrb
+  - FollowingEnemy
+  - HealthIncreaseOrb
+  - ManaIncreaseOrb
+  - Cannon
+  - CannonBall
   layers:
   - Default
   - TransparentFX

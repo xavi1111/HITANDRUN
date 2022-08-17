@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityStandardAssets.CrossPlatformInput;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IDataPersistence
 {
     public static event Action<Vector3> FollowMe;
     Rigidbody2D myRigidBody2D;
@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
     Animator myAnimator;
     GameObject player;
     Vector3 previousPosition;
+    SpriteRenderer mySpriteRenderer;
     [SerializeField] float followDistance;
     [SerializeField] HealthBar healthBar;
     [SerializeField] ManaBar manaBar;
@@ -28,6 +29,7 @@ public class Player : MonoBehaviour
     [SerializeField] float playerMana = 100;
     [SerializeField] float healManaCost = 0.01f;
     [SerializeField] float healPerFrame = 0.01f;
+    [SerializeField] public float timeToColor = 2;
     float arrowManaCost = 20;
     float manaGain = 10;
     [SerializeField] AudioClip arrowSFX;
@@ -52,20 +54,17 @@ public class Player : MonoBehaviour
         healthBar.setCurrentHealth(playerHealth);
         manaBar.setMaxMana(playerMana);
         manaBar.setCurrentMana(playerMana);
+        mySpriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        /*if (Vector3.Distance(transform.position, previousPosition) > followDistance)
-        {*/
-            if (FollowMe != null)
-            {
-                FollowMe.Invoke(transform.position);
-            }
-
-           
-        //}
+        
+        if (FollowMe != null)
+        {
+            FollowMe.Invoke(transform.position);
+        }
 
         if (myCollider2D.IsTouchingLayers(LayerMask.GetMask("Ground")) && jumpsRemaining == 0)
             jumpsRemaining++;
@@ -84,7 +83,7 @@ public class Player : MonoBehaviour
             Run();
             FlipSprite();
             if (currentAttackCooldown.Equals(attackCooldown))
-                AttackArrow();
+                Attack();
             if (currentDashCooldown == dashCooldown)
                 Dash();
             Heal();
@@ -106,7 +105,6 @@ public class Player : MonoBehaviour
         {
             myAnimator.SetBool("Dash", false);
         }
-
     }
 
     private void Heal()
@@ -176,26 +174,10 @@ public class Player : MonoBehaviour
         myAnimator.SetBool("Running", playerIsMovingHorizontaly);
     }
 
-    private void AttackArrow()
+    private void Attack()
     {
             if (CrossPlatformInputManager.GetButtonDown("Fire1"))
             {
-                /*
-                 Arrow
-                if (manaBar.getCurrentMana() >= arrowManaCost)
-                {
-                    Vector2 playerVelocity = new Vector2(0, myRigidBody2D.velocity.y);
-                    myRigidBody2D.velocity = playerVelocity;
-                    myAnimator.SetBool("Attack", true);
-                    currentAttackCooldown--;
-                    GameObject arrow = Instantiate(arrowPrefab, transform.position, Quaternion.identity);
-                    arrow.GetComponent<Rigidbody2D>().velocity = new Vector2((lastDirection > 0 ? 1 : -1) * arrow.GetComponent<Arrow>().arrowSpeed, 0f);
-                    arrow.GetComponent<Transform>().localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
-                    AudioSource.PlayClipAtPoint(arrowSFX, UnityEngine.Camera.main.transform.position, 15);
-                
-                    manaBar.setCurrentMana(manaBar.getCurrentMana() - arrowManaCost);
-                }*/
-
                 Vector2 playerVelocity = new Vector2(0, myRigidBody2D.velocity.y);
                 myRigidBody2D.velocity = playerVelocity;
                 myAnimator.SetBool("Attack", true);
@@ -204,25 +186,30 @@ public class Player : MonoBehaviour
                 GameObject slash = Instantiate(slashPrefab, transform.position + new Vector3(controlThrow.Equals(0) ? (lastDirection > 0 ? 1 : -1) * 0.5f : 0, controlThrow.Equals(0) ? 0 : (controlThrow > 0 ? 1 : -1) * 0.5f, 0), Quaternion.identity);
                 slash.GetComponent<Transform>().localScale = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z);
                 AudioSource.PlayClipAtPoint(arrowSFX, UnityEngine.Camera.main.transform.position, 15);
-            }
+                if (manaBar.getCurrentMana() < manaBar.getMaxMana() && (manaBar.getCurrentMana() + manaGain) <= manaBar.getMaxMana())
+                    manaBar.setCurrentMana(manaBar.getCurrentMana() + manaGain);
+                else if (manaBar.getCurrentMana() < manaBar.getMaxMana() && (manaBar.getCurrentMana() + manaGain) >= manaBar.getMaxMana())
+                    manaBar.setCurrentMana(manaBar.getMaxMana());
+        }
     }
 
-    private void Attack()
+    private void AttackArrow()
     {
         if (CrossPlatformInputManager.GetButtonDown("Fire1"))
         {
-            Vector2 playerVelocity = new Vector2(0, myRigidBody2D.velocity.y);
-            myRigidBody2D.velocity = playerVelocity;
-            myAnimator.SetBool("Attack", true);
-            currentAttackCooldown--;
-            GameObject arrow = Instantiate(arrowPrefab, transform.position, Quaternion.identity) as GameObject;
-            arrow.GetComponent<Rigidbody2D>().velocity = new Vector2((lastDirection > 0 ? 1 : -1) * arrow.GetComponent<Arrow>().arrowSpeed, 0f);
-            arrow.GetComponent<Transform>().localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
-            AudioSource.PlayClipAtPoint(arrowSFX, UnityEngine.Camera.main.transform.position, 15);
-            if(manaBar.getCurrentMana() < manaBar.getMaxMana() && (manaBar.getCurrentMana() + manaGain) <= manaBar.getMaxMana())
-                manaBar.setCurrentMana(manaBar.getCurrentMana() + manaGain);
-            else if (manaBar.getCurrentMana() < manaBar.getMaxMana() && (manaBar.getCurrentMana() + manaGain) >= manaBar.getMaxMana())
-                manaBar.setCurrentMana(manaBar.getMaxMana());
+            if (manaBar.getCurrentMana() >= arrowManaCost)
+            {
+                Vector2 playerVelocity = new Vector2(0, myRigidBody2D.velocity.y);
+                myRigidBody2D.velocity = playerVelocity;
+                myAnimator.SetBool("Attack", true);
+                currentAttackCooldown--;
+                GameObject arrow = Instantiate(arrowPrefab, transform.position, Quaternion.identity) as GameObject;
+                arrow.GetComponent<Rigidbody2D>().velocity = new Vector2((lastDirection > 0 ? 1 : -1) * arrow.GetComponent<Arrow>().arrowSpeed, 0f);
+                arrow.GetComponent<Transform>().localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+                AudioSource.PlayClipAtPoint(arrowSFX, UnityEngine.Camera.main.transform.position, 15);
+                manaBar.setCurrentMana(manaBar.getCurrentMana() - arrowManaCost);
+            }
+
         }
     }
 
@@ -239,10 +226,51 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.tag.Equals("Enemy"))
         {
-            playerHealth -= collision.gameObject.GetComponent<Enemy>().damage;
-            healthBar.setCurrentHealth(playerHealth);
-            
+            if (!mySpriteRenderer.color.Equals(new Color(1, 0, 0, 1)))
+            {
+                playerHealth -= collision.gameObject.GetComponent<Enemy>().damage;
+                healthBar.setCurrentHealth(playerHealth);
+                StartCoroutine(DamageAnimation());
+            }
         }
+        if (collision.gameObject.tag.Equals("CannonBall"))
+        {
+            if (!mySpriteRenderer.color.Equals(new Color(1, 0, 0, 1)))
+            {
+                playerHealth -= collision.gameObject.GetComponent<CannonBall>().damage;
+                healthBar.setCurrentHealth(playerHealth);
+                StartCoroutine(DamageAnimation());
+            }
+        }
+        if (collision.gameObject.tag.Equals("HealthIncreaseOrb"))
+        {
+            playerHealth = healthBar.getMaxHealth() + 50;
+            healthBar.setMaxHealth(playerHealth);
+            healthBar.setCurrentHealth(playerHealth);
+        }
+        if (collision.gameObject.tag.Equals("ManaIncreaseOrb"))
+        {
+            playerMana = manaBar.getMaxMana() + 50;
+            manaBar.setMaxMana(playerHealth);
+            manaBar.setCurrentMana(playerHealth);
+        }
+    }
+    private IEnumerator DamageAnimation()
+    {
+        Color currentColor = mySpriteRenderer.color;
+        mySpriteRenderer.color = new Color(1, 0, 0, 1);
+        yield return new WaitForSeconds(timeToColor);
+        mySpriteRenderer.color = currentColor;
+    }
+
+    public void LoadData(GameData data)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        throw new NotImplementedException();
     }
 }
 

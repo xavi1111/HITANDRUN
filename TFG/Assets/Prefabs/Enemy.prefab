@@ -159,6 +159,9 @@ MonoBehaviour:
   enemyHealth: 60
   damage: 20
   timeToColor: 0.3
+  moneyOrbPrefab: {fileID: 2132294409246262874, guid: 39105cf145ad1fa41908138b85bac43c,
+    type: 3}
+  moneyOrbsDropped: 3
 --- !u!61 &3846843895137085002
 BoxCollider2D:
   m_ObjectHideFlags: 0

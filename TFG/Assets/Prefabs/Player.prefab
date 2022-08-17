@@ -146,8 +146,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec613ab9045512e40829ba3f62681dd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  followDistance: 0
   healthBar: {fileID: 0}
+  manaBar: {fileID: 0}
   arrowPrefab: {fileID: 1529161055896379656, guid: 57bdf8f1b86cc3d4cbad6898297fe1b7,
+    type: 3}
+  slashPrefab: {fileID: 1989126684243967802, guid: a9595b9eae9c51644abbd644d3e351e2,
     type: 3}
   playerSpeed: 3
   jumpSpeed: 20
@@ -156,6 +160,10 @@ MonoBehaviour:
   dashCooldown: 180
   attackCooldown: 90
   playerHealth: 50
+  playerMana: 100
+  healManaCost: 10
+  healPerFrame: 10
+  timeToColor: 2
   arrowSFX: {fileID: 8300000, guid: f67bd6f1523e2fb43bc5b1314924a309, type: 3}
   dashSFX: {fileID: 8300000, guid: 33c4156cc213ee04c812c1ec1319a2aa, type: 3}
   jumpSFX: {fileID: 8300000, guid: 363086b0233af3a4c93969b6828a094b, type: 3}

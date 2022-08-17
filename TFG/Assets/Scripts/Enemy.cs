@@ -12,7 +12,9 @@ public class Enemy : MonoBehaviour
     [SerializeField] float enemySpeed = 1;
     [SerializeField] float enemyHealth = 100;
     [SerializeField] public float damage = 20;
-    [SerializeField] public float timeToColor = 20;
+    [SerializeField] public float timeToColor = 2;
+    [SerializeField] GameObject moneyOrbPrefab;
+    [SerializeField] int moneyOrbsDropped = 3;
     // Start is called before the first frame update
     void Start()
     {
@@ -25,13 +27,19 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(enemyHealth<=0)
+        if (enemyHealth <= 0)
+        {
             Destroy(gameObject);
+            for (int i = 0; i < moneyOrbsDropped; i++) 
+            { 
+                GameObject moneyOrb = Instantiate(moneyOrbPrefab, transform.position, Quaternion.identity);
+                moneyOrb.GetComponent<Transform>().position= new Vector2(transform.position.x + UnityEngine.Random.Range(-1.0f, 1.0f) , 0f);
+            }
+        }
         if (enemyMovingRight())
             myRigidBody2D.velocity = new Vector2(enemySpeed, 0);
         else
             myRigidBody2D.velocity = new Vector2(-enemySpeed, 0);
-        damageAnimation();
     }
 
 
@@ -42,7 +50,7 @@ public class Enemy : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (!collision.gameObject.tag.Equals("Enemy"))
+        if (!(collision.gameObject.tag.Equals("Enemy") || collision.gameObject.tag.Equals("MoneyOrb") || collision.gameObject.tag.Equals("Cannon")))
         {
             transform.localScale = new Vector2(3 * -(Mathf.Sign(myRigidBody2D.velocity.x)), 3f);
         }
@@ -55,12 +63,12 @@ public class Enemy : MonoBehaviour
         {
             enemyHealth -= collision.gameObject.GetComponent<Arrow>().damage;
             Destroy(collision.gameObject);
-            StartCoroutine(damageAnimation());
+            StartCoroutine(DamageAnimation());
         }
         if (collision.gameObject.tag.Equals("Slash"))
         {
             enemyHealth -= collision.gameObject.GetComponent<Slash>().damage;
-            StartCoroutine(damageAnimation());
+            StartCoroutine(DamageAnimation());
         }
         if (collision.gameObject.tag.Equals("Enemy"))
         {
@@ -68,7 +76,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private IEnumerator damageAnimation()
+    private IEnumerator DamageAnimation()
     {
         Color currentColor = mySpriteRenderer.color;
         mySpriteRenderer.color = new Color(1, 0, 0, 1);
