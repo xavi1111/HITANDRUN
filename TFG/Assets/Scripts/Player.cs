@@ -254,6 +254,11 @@ public class Player : MonoBehaviour, IDataPersistence
             manaBar.setMaxMana(playerHealth);
             manaBar.setCurrentMana(playerHealth);
         }
+
+        if (collision.gameObject.tag.Equals("Wall"))
+        {
+            myRigidBody2D.velocity = new Vector2(myRigidBody2D.velocity.x, 0);
+        }
     }
     private IEnumerator DamageAnimation()
     {

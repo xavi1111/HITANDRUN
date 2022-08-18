@@ -33,7 +33,7 @@ public class Enemy : MonoBehaviour
             for (int i = 0; i < moneyOrbsDropped; i++) 
             { 
                 GameObject moneyOrb = Instantiate(moneyOrbPrefab, transform.position, Quaternion.identity);
-                moneyOrb.GetComponent<Transform>().position= new Vector2(transform.position.x + UnityEngine.Random.Range(-1.0f, 1.0f) , 0f);
+                moneyOrb.GetComponent<Transform>().position= new Vector2(transform.position.x + UnityEngine.Random.Range(-1.0f, 1.0f) , transform.position.y);
             }
         }
         if (enemyMovingRight())

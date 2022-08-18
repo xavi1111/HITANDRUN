@@ -14,4 +14,16 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameOverScene.unity
     guid: a5852729e8b5d24419e87cdc79b916a6
+  - enabled: 1
+    path: Assets/Scenes/LeftBottomScene.unity
+    guid: 2deff532e026d5144baeec09135f27d4
+  - enabled: 1
+    path: Assets/Scenes/LeftTopScene.unity
+    guid: 63b9f8face5190840a6024d2b8e325a9
+  - enabled: 1
+    path: Assets/Scenes/RightBottomScene.unity
+    guid: 22c34650a5c863543a774d044844de75
+  - enabled: 1
+    path: Assets/Scenes/RightTopScene.unity
+    guid: 11b557d672446d74aaeaaa25bf6bc8e0
   m_configObjects: {}

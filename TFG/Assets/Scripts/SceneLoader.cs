@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class SceneLoader : MonoBehaviour
 {
+    [SerializeField] int sceneNumber;
     public void loadFirstLevel()
     {
         SceneManager.LoadScene(1);
@@ -23,12 +24,17 @@ public class SceneLoader : MonoBehaviour
         Application.Quit();
     }
 
+    public void loadScene(int sceneNumber)
+    {
+        SceneManager.LoadScene(sceneNumber);
+    }
+
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag.Equals("Player"))
         {
-            loadGameOverScreen();
+            loadScene(sceneNumber);
         }
     }
 }
