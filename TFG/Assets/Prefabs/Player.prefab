@@ -159,7 +159,7 @@ MonoBehaviour:
   maxDashTime: 180
   dashCooldown: 180
   attackCooldown: 90
-  playerHealth: 50
+  playerHealth: 100
   playerMana: 100
   healManaCost: 10
   healPerFrame: 10

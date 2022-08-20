@@ -6,6 +6,8 @@ public class FollowingEnemy : MonoBehaviour
 {
     Rigidbody2D myRigidBody2D;
     CircleCollider2D myCircleCollider2D;
+    [SerializeField] public float damage = 40;
+
     bool startFollowing = false;
     // Start is called before the first frame update
     void Start()
@@ -32,8 +34,8 @@ public class FollowingEnemy : MonoBehaviour
         if (startFollowing)
         {
             myRigidBody2D.velocity = new Vector3(0, 0, 0);
-            Vector3 velocityToAdd = new Vector3(transform.position.x < position.x ? 4 : (transform.position.x > position.x ? -4 : 0), -1f, 0);
-            myRigidBody2D.velocity = velocityToAdd;
+            Vector2 velocityToAdd = new Vector2((position.x - transform.position.x)*8, -1f*8);
+            myRigidBody2D.velocity += velocityToAdd;
         }
     }
 
@@ -53,6 +55,7 @@ public class FollowingEnemy : MonoBehaviour
             {
                 startFollowing = true;
                 myCircleCollider2D.radius = 0.32f;
+                myCircleCollider2D.offset = new Vector2(0.0f, 0.0f);
             }
         }
 

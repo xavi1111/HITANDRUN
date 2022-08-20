@@ -242,6 +242,27 @@ public class Player : MonoBehaviour, IDataPersistence
                 StartCoroutine(DamageAnimation());
             }
         }
+        if (collision.gameObject.tag.Equals("Spikes"))
+        {
+            if (!mySpriteRenderer.color.Equals(new Color(1, 0, 0, 1)))
+            {
+                playerHealth -= 20;
+                healthBar.setCurrentHealth(playerHealth);
+                StartCoroutine(DamageAnimation());
+            }
+        }
+        if (collision.gameObject.tag.Equals("FollowingEnemy"))
+        {
+            if (!mySpriteRenderer.color.Equals(new Color(1, 0, 0, 1)))
+            {
+                if(collision.gameObject.GetComponent<CircleCollider2D>().radius.Equals(0.32f))
+                {
+                    playerHealth -= 20;
+                    healthBar.setCurrentHealth(playerHealth);
+                    StartCoroutine(DamageAnimation());
+                }
+            }
+        }
         if (collision.gameObject.tag.Equals("HealthIncreaseOrb"))
         {
             playerHealth = healthBar.getMaxHealth() + 50;

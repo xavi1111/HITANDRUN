@@ -29,15 +29,6 @@ public class Cannon : MonoBehaviour
             Attack();
         }
 
-        if (cannonHealth <= 0)
-        {
-            Destroy(gameObject);
-            for (int i = 0; i < moneyOrbsDropped; i++)
-            {
-                GameObject moneyOrb = Instantiate(moneyOrbPrefab, transform.position, Quaternion.identity);
-                moneyOrb.GetComponent<Transform>().position = new Vector2(transform.position.x + UnityEngine.Random.Range(-1.0f, 1.0f), 0f);
-            }
-        }
     }
 
     private void Attack()
@@ -45,7 +36,7 @@ public class Cannon : MonoBehaviour
         if (canAttack)
         {
             GameObject cannonBall = Instantiate(cannonBallPrefab, transform.position, Quaternion.identity) as GameObject;
-            cannonBall.GetComponent<Rigidbody2D>().velocity = new Vector2(player.GetComponent<Transform>().position.x - transform.position.x > 0 ? speed : -speed, player.GetComponent<Transform>().position.y - transform.position.y);
+            cannonBall.GetComponent<Rigidbody2D>().velocity = new Vector2(player.GetComponent<Transform>().position.x - transform.position.x, player.GetComponent<Transform>().position.y - transform.position.y);
             StartCoroutine(AttackCooldown());
         }
     }
@@ -55,15 +46,6 @@ public class Cannon : MonoBehaviour
         if (collision.gameObject.tag.Equals("Player"))
         {
             player = collision.gameObject;
-        }
-        if (collision.gameObject.tag.Equals("Arrow"))
-        {
-            cannonHealth -= collision.gameObject.GetComponent<Arrow>().damage;
-            Destroy(collision.gameObject);
-        }
-        if (collision.gameObject.tag.Equals("Slash"))
-        {
-            cannonHealth -= collision.gameObject.GetComponent<Slash>().damage;
         }
     }
 
